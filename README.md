@@ -1,6 +1,6 @@
 Well hello stranger, welcome to my Wordle project. I promise it's not nearly as efficient or effective as the one 3Blue1Brown but you'll never miss a word, I think. 
 
-The way it words is prety simple. Copy the code into your own IDE and run it. Upon running enter your preferred starting wordle word into wordle. Then copy it's accuracy into the command line in this format.
+The way it works is pretty simple. Copy the code into your own IDE and run it. Upon running, enter your preferred starting wordle word into wordle. Then copy it's accuracy into the command line in this format.
 
 Format:
 \_,\_,\_,\_,\_
