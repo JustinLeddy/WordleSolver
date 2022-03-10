@@ -123,7 +123,7 @@ public class IdealWordSequence {
             //grab list of words with most vowels
 
             int bestRemoved = 0;
-            if (words.size() <= 2) {
+            if (words.size() <= 2 || confirmedLetters.size() == 5) {
                 for (Word w : words) {
                     //copy words
                     ArrayList<Word> copy = new ArrayList<>(words);

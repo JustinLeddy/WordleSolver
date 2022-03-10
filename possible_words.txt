@@ -1,2 +1,2 @@
-angle 5 2
-ankle 5 2
+sense 3 2
+scene 4 2
