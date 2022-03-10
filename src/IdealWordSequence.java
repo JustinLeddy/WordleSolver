@@ -63,14 +63,18 @@ public class IdealWordSequence {
                         if (fitsInput) {
                             if (letters[i].charAt(0) == '!') { //letter in word
                                 String letter = letters[i].substring(1, 2);
-                                confirmedLetters.add(letter);
+                                if(!confirmedLetters.contains(letter)) {
+                                    confirmedLetters.add(letter);
+                                }
                                 //check if word contains letter not in this spot.
                                 if (!(content[0].contains(letter) && !content[0].substring(i, i + 1).equals(letter))) {
                                     fitsInput = false;
                                 }
                             } else if (letters[i].charAt(0) == '^') { //confirmed letter
                                 String letter = letters[i].substring(1, 2);
-                                confirmedLetters.add(letter);
+                                if(!confirmedLetters.contains(letter)) {
+                                    confirmedLetters.add(letter);
+                                }
                                 //check if word matches, if not remove
                                 if (!(letter.equals(content[0].substring(i, i + 1)))) {
                                     fitsInput = false;
@@ -114,30 +118,50 @@ public class IdealWordSequence {
             pw2.close();
 
 
-
             //all data imported
             ArrayList<Word> idealFirstWords = new ArrayList<>();
             //grab list of words with most vowels
 
             int bestRemoved = 0;
+            if (words.size() <= 2) {
+                for (Word w : words) {
+                    //copy words
+                    ArrayList<Word> copy = new ArrayList<>(words);
 
-            for (Word w : nonFitWords) {
-                //copy words
-                ArrayList<Word> copy = new ArrayList<>(words);
+                    //get number of possible removed words
+                    ArrayList<Word> removedWords = removeOtherWords(w, copy, confirmedLetters);
 
-                //get number of possible removed words
-                ArrayList<Word> removedWords = removeOtherWords(w, copy,confirmedLetters);
+                    int numRemoved = words.size() - removedWords.size();
 
-                int numRemoved = words.size() - removedWords.size();
+                    if (numRemoved > bestRemoved) {
+                        //if we find a better solution, empty list of first words, then re-add solution
+                        bestRemoved = numRemoved;
+                        idealFirstWords.clear();
+                        idealFirstWords.add(w);
+                    } else if (numRemoved == bestRemoved) {
+                        //matches best
+                        idealFirstWords.add(w);
+                    }
+                }
+            } else {
+                for (Word w : nonFitWords) {
+                    //copy words
+                    ArrayList<Word> copy = new ArrayList<>(words);
 
-                if (numRemoved > bestRemoved) {
-                    //if we find a better solution, empty list of first words, then re-add solution
-                    bestRemoved = numRemoved;
-                    idealFirstWords.clear();
-                    idealFirstWords.add(w);
-                } else if (numRemoved == bestRemoved) {
-                    //matches best
-                    idealFirstWords.add(w);
+                    //get number of possible removed words
+                    ArrayList<Word> removedWords = removeOtherWords(w, copy, confirmedLetters);
+
+                    int numRemoved = words.size() - removedWords.size();
+
+                    if (numRemoved > bestRemoved) {
+                        //if we find a better solution, empty list of first words, then re-add solution
+                        bestRemoved = numRemoved;
+                        idealFirstWords.clear();
+                        idealFirstWords.add(w);
+                    } else if (numRemoved == bestRemoved) {
+                        //matches best
+                        idealFirstWords.add(w);
+                    }
                 }
             }
 
@@ -156,21 +180,21 @@ public class IdealWordSequence {
                 }
             }
 
-            System.out.println("A good choice would be \"" + choice.getWord() + "\" which could remove " + bestRemoved + "/" + words.size() + " words." );
+            System.out.println("A good choice would be \"" + choice.getWord() + "\" which could remove " + bestRemoved + "/" + words.size() + " words.");
             System.out.println("Number of Possible Words: " + words.size() + " Words Eliminated: " + (initialWordNum - words.size()));
-
+            System.out.println();
 
         }
     }
 
 
-    public static ArrayList<Word> removeOtherWords(Word word, ArrayList<Word> words,ArrayList<String> confirmed) {
+    public static ArrayList<Word> removeOtherWords(Word word, ArrayList<Word> words, ArrayList<String> confirmed) {
 
         ArrayList<Word> removedWords = new ArrayList<>(words);
         //loop through letters
         for (int i = 0; i < word.getWord().length(); i++) {
             String letter = word.getWord().substring(i, i + 1);
-            if(confirmed.contains(letter)) {
+            if (confirmed.contains(letter)) {
                 continue;
             }
             for (int j = 0; j < words.size(); j++) {
