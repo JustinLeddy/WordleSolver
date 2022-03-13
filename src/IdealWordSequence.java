@@ -1,10 +1,7 @@
 // import statements here
 
 import java.io.*;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Scanner;
 
 /**
@@ -14,7 +11,7 @@ import java.util.Scanner;
  * <p>
  * a list of your sources of help (if any)
  *
- * @author Justin L, LC1
+ * @author Justin L
  * @version 02/03/2022
  */
 
@@ -31,7 +28,9 @@ public class IdealWordSequence {
             input = input.trim();
             input = input.toLowerCase();
             String[] letters = input.split(",");
-
+            if(letters.length < 5) {
+                continue;
+            }
 
             //variables
             ArrayList<Word> words = new ArrayList<>();

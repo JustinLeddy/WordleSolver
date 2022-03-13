@@ -5707,7 +5707,6 @@ snook 4 2
 hying 5 1
 fuzed 5 2
 barms 5 1
-crink 5 1
 moots 4 2
 yerba 5 2
 rhumb 5 1
