@@ -1,7 +1,1 @@
-myrrh 4 0
-lymph 5 0
-wryly 4 0
-pygmy 4 0
-glyph 5 0
-flyby 4 0
-gyppy 3 0
+omega 5 3
