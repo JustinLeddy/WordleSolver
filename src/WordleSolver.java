@@ -17,23 +17,19 @@ import java.util.Scanner;
 
 public class WordleSolver {
 
-    private boolean firstRun;
-    private String dictFile;
     private ArrayList<Word> dict;
     private ArrayList<Word> words;
+    private ArrayList<Word> nonFitWords;
     private ArrayList<String> confirmedLetters;
     private int bestRemoved;
     private int initialWordNum;
     private int wordSize;
-    private long timeExecutingTest;
 
     public WordleSolver(String dictionary) throws IOException{
-        firstRun = true;
-        timeExecutingTest = 0;
-        dictFile = dictionary;
+        dict = new ArrayList<>(5756);
 
         //intialize dictionary file
-        BufferedReader br = new BufferedReader(new FileReader(dictFile));
+        BufferedReader br = new BufferedReader(new FileReader(dictionary));
         String line = br.readLine();
         while(line != null) {
             if (line.length() > 0) {
@@ -44,7 +40,8 @@ public class WordleSolver {
         }
 
         //initialize words list
-        words = new ArrayList<>(5756);
+        words = new ArrayList<>();
+        nonFitWords = new ArrayList<>();
         confirmedLetters = new ArrayList<>(5);
 
 
@@ -57,21 +54,28 @@ public class WordleSolver {
             if (letters.length < 5) {
                 return null;
             }
+            else if(letters.length > 5) {
+                //reset words
+                words = new ArrayList<>(dict);
+                nonFitWords = new ArrayList<>();
+                confirmedLetters.clear();
+
+            }
 
             //loop through file
-            initialWordNum = initializePossibleWordsGuesses(words,letters,confirmedLetters);
+            initializePossibleWordsGuesses(letters);
 
             //set wordSize
             wordSize = words.size();
 
             //all data imported
-            ArrayList<Word> idealGuesses = getIdealGuess(words,confirmedLetters);
+            ArrayList<Word> idealGuesses = getIdealGuess();
 
             return idealGuesses;
     }
 
     public ArrayList<Word> run(String result) throws IOException {
-        ArrayList<String> confirmedLetters = new ArrayList<>();
+        confirmedLetters = new ArrayList<>();
 
         //prompt user for known letters / positions
         String[] letters = result.split(",");
@@ -79,29 +83,26 @@ public class WordleSolver {
             return null;
         }
 
-        //variables
-        ArrayList<Word> words = new ArrayList<>();
-        ArrayList<Word> nonFitWords = new ArrayList<>();
+        else if(letters.length > 5) {
+            //reset words
+            words = new ArrayList<>(dict);
+            nonFitWords = new ArrayList<>();
+            confirmedLetters.clear();
 
-        //check if initial case or not
-        BufferedReader br = new BufferedReader(new FileReader("possible_words.txt"));
-        if (letters.length > 5) {
-            br.close();
-            confirmedLetters = new ArrayList<>();
-            br = new BufferedReader(new FileReader(dictFile));
         }
 
         //loop through file
-        initialWordNum = initializePossibleWordsGuesses(words,letters,confirmedLetters);
+        initializePossibleWordsGuesses(letters);
 
         //set wordSize
         wordSize = words.size();
 
         //all data imported
-        ArrayList<Word> idealGuesses = getIdealGuess(words,confirmedLetters);
+        ArrayList<Word> idealGuesses = getIdealGuess();
 
         return idealGuesses;
     }
+
     public ArrayList<Word> removeOtherWords(Word word, ArrayList<Word> words, ArrayList<String> confirmed) {
 
         ArrayList<Word> removedWords = new ArrayList<>(words);
@@ -131,15 +132,13 @@ public class WordleSolver {
 
     }
 
-    public int initializePossibleWordsGuesses(ArrayList<Word> words, String[] letters, ArrayList<String> confirmedLetters) throws IOException{
-        //initial condition
-        if(firstRun) {
-            words = dict;
-            firstRun = false;
-        }
+    public void initializePossibleWordsGuesses(String[] letters) throws IOException{
         //loop through file
-        int initialWordNum = words.size();
-        for(Word w : words) {
+        initialWordNum = words.size();
+        //copy words and reset
+        ArrayList<Word> temp = new ArrayList<>(words);
+        words.clear();
+        for(Word w : temp) {
                 //check if word fits input parameters
                 boolean fitsInput = true;
                 boolean badLetter = false;
@@ -148,8 +147,8 @@ public class WordleSolver {
 
                     //check if we already guessed a letter in that spot
                     if (fitsInput) {
-                        if (currentWord.charAt(0) == '!') { //letter in word
-                            String letter = currentWord.substring(1, 2);
+                        if (letters[i].charAt(0) == '!') { //letter in word
+                            String letter = letters[i].substring(1, 2);
                             if (!confirmedLetters.contains(letter)) {
                                 confirmedLetters.add(letter);
                             }
@@ -175,22 +174,25 @@ public class WordleSolver {
                         }
                     }
                 }
-                if (fitsInput || !badLetter) {
-                    //add any word that fits the layout or has valuable information
-                    words.add(w);
-                }
+
+            if (fitsInput) {
+                words.add(w);
+            }
+            if (!badLetter) {
+                //add any word that doesn't have a restricted letter
+                nonFitWords.add(w);
+            }
         }
 
-
-        //write new list of words to separate input file
-       PrintWriter pw = new PrintWriter("possible_words.txt");
+        /*/write new list of words to separate input file
+        PrintWriter pw = new PrintWriter("possible_words.txt");
         for (Word w : words) {
             pw.print(w.getWord() + " " + w.getNumUnique() + " " + w.getVowelNum() + "\n");
         }
         pw.flush();
         pw.close();
 
-        /*/write new list of words to separate input file
+        //write new list of words to separate input file
         PrintWriter pw2 = new PrintWriter("non_fit_words.txt");
         for (Word w : nonFitWords) {
             pw2.print(w.getWord() + " " + w.getNumUnique() + " " + w.getVowelNum() + "\n");
@@ -198,17 +200,35 @@ public class WordleSolver {
         pw2.flush();
         pw2.close();
         */
-
-        return initialWordNum;
     }
 
-    public ArrayList<Word> getIdealGuess(ArrayList<Word> words, ArrayList<String> confirmedLetters) {
+    public ArrayList<Word> getIdealGuess() {
         ArrayList<Word> idealFirstWords = new ArrayList<>();
         //grab list of words with most vowels
 
         bestRemoved = 0;
-        if (words.size() <= 2 || confirmedLetters.size() == 5) {
+        if(words.size() <= 2 || confirmedLetters.size() >=4) {
             for (Word w : words) {
+                //copy words
+                ArrayList<Word> copy = new ArrayList<>(words);
+
+                //get number of possible removed words
+                ArrayList<Word> removedWords = removeOtherWords(w, copy, confirmedLetters);
+
+                int numRemoved = words.size() - removedWords.size();
+
+                if (numRemoved > bestRemoved) {
+                    //if we find a better solution, empty list of first words, then re-add solution
+                    bestRemoved = numRemoved;
+                    idealFirstWords.clear();
+                    idealFirstWords.add(w);
+                } else if (numRemoved == bestRemoved) {
+                    //matches best
+                    idealFirstWords.add(w);
+                }
+            }
+        } else {
+            for (Word w : nonFitWords) {
                 //copy words
                 ArrayList<Word> copy = new ArrayList<>(words);
 

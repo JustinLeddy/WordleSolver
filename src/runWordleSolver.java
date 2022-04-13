@@ -16,8 +16,14 @@ import java.util.ArrayList;
 
 public class runWordleSolver {
     public static void main(String[] args) {
+        WordleSolver solver = null;
+        try {
+            solver = new WordleSolver("word_unique_vowel.txt");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         while (true) {
-            WordleSolver solver = new WordleSolver("word_unique_vowel.txt");
             ArrayList<Word> guesses = null;
             try {
                 guesses = solver.run();
