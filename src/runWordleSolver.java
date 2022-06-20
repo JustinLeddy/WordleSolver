@@ -18,7 +18,7 @@ public class runWordleSolver {
     public static void main(String[] args) {
         WordleSolver solver = null;
         try {
-            solver = new WordleSolver("word_unique_vowel.txt");
+            solver = new WordleSolver("word_unique_vowel_es.txt");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -51,7 +51,8 @@ public class runWordleSolver {
                     choice = w;
                 }
             }
-            String output = "A good choice would be \"" + choice.getWord() + "\" which could remove " + solver.getBestRemoved() + "/" + solver.getWordSize() + " words.\n" +
+            int prevCount = solver.getWordSize();
+            String output = "A good choice would be \"" + choice.getWord() + "\" which could remove " + solver.getBestRemoved() + "/" + prevCount + " words.\n" +
                     "Number of Possible Words: " + solver.getWordSize() + " Words Eliminated: " + (solver.getInitialWordNum() - solver.getWordSize()) + "\n";
             System.out.print(output);
         }

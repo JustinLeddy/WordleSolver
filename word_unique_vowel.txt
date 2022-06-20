@@ -4364,7 +4364,6 @@ cabal 4 2
 rawer 4 2
 pampa 3 2
 mosey 5 2
-kefir 5 2
 burgs 5 1
 unmet 5 2
 cuspy 5 1
@@ -4679,7 +4678,6 @@ gigue 4 3
 limed 5 2
 plein 5 2
 redly 5 1
-humpf 5 1
 lites 5 2
 seest 3 2
 grebe 4 2
