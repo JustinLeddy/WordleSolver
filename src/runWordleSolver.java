@@ -1,7 +1,9 @@
 // import statements here
 
 import java.io.IOException;
+import java.sql.SQLOutput;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 /**
  * main
@@ -15,10 +17,31 @@ import java.util.ArrayList;
  */
 
 public class runWordleSolver {
+    static String dictEN = "word_unique_vowel.txt";
+    static String dictES = "word_unique_vowel.txt";
+    static String dictESTilde = "word_unique_vowel.txt";
+
     public static void main(String[] args) {
+
+        //catch dictionary language
+        Scanner in = new Scanner(System.in);
+        System.out.println("1 = English; 2 = Español; 3 = Español con tildes;");
+        int input = in.nextInt();
+
         WordleSolver solver = null;
         try {
-            solver = new WordleSolver("word_unique_vowel_es.txt");
+            //language select
+            switch (input) {
+                case 1:
+                    solver = new WordleSolver("word_unique_vowel.txt");
+                    break;
+                case 2:
+                    solver = new WordleSolver("word_unique_vowel_es.txt");
+                    break;
+                case 3:
+                    solver = new WordleSolver("word_unique_vowel_es_tilde.txt");
+                    break;
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -44,6 +67,7 @@ public class runWordleSolver {
             } catch (IndexOutOfBoundsException | NullPointerException e) {
                 //TODO add new exception type
                 System.out.println("No possible choices, check your inputs or update dictionary.");
+                choice = new Word("",0,0);
             }
 
             for (Word w : guesses) {
