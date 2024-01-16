@@ -14,3 +14,8 @@ prepend green letters with "^"
 For example, if I entered aloes and got back yellow, grey, grey, green, yellow I would enter:
 
 "!a,l,o,^e,!s" into the terminal.
+
+Justin if you're reading this you forgot to:
+- Make a GUI/ turn this into a web app
+- Restructure the project since you know how to do it better now.
+- Solve the daily wordle, I mean why else would you code this?
